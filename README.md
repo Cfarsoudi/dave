@@ -15,6 +15,12 @@ Current Questions:
     - Or Other Methods
   3.  Genre selection?
 
+Generation:
+  -grammars
+  -scikit
+  -Source?
+  -NLTK machine learning?
+
 Definition of Done(DoD):
 
 
