@@ -8,7 +8,9 @@ of bigrams found in the text.
 Modified from Chris Moyer's <cmoyer@newstex.com>
 '''
 
-import nltk, random
+import nltk, random, itertools, bisect
+from collections import defaultdict, Counter
+# from numpy import random as npr
 
 TERMINAL_PUNCT = ['.', '!', '?', '\n\n']
 SPLIT_PUNCT = [',', ';']
@@ -17,67 +19,110 @@ STOPWORDS = nltk.corpus.stopwords.words('english')
 
 class sentGenerator(object):
 
-	def __init__(self, corpa, *args, **kwargs):
-		if isinstance(corpa, str):
-			words = nltk.word_tokenize(corpa)
-			sents = nltk.sent_tokenize(corpa)
-		bigrams = nltk.bigrams([w.lower() for w in words])
-		self.cdf = nltk.ConditionalFreqDist(bigrams)
-		self.flat_cdf = nltk.ConditionalFreqDist([(w.lower(), w) for w in words])
-		self.avg_sent_len = int(len(words)/len(sents))
+    def __init__(self, corpa, *args, **kwargs):
+        if isinstance(corpa, str):
+            self.words = nltk.word_tokenize(corpa)
+            self.sents = nltk.sent_tokenize(corpa)
+            self.starts = []
+            self.ends = []
+            self.pause = []
+            self.resume = []
+            for sent in self.sents:
+                sent = nltk.word_tokenize(sent)
+                self.starts.append(sent[0])
+                self.ends.append(sent[-2])
+                for punct in SPLIT_PUNCT:
+                    split = ' '.join(sent).split(punct)
+                    if len(split) > 1:
+                        for clause in split:
+                            clause = clause.split()
+                            self.pause.append(clause[-1])
+                            self.resume.append(clause[0])
+            # self.avgLen = int(len(self.words)/len(self.sents))
+        # self.text = ''
 
-	# Generates phrases through bigram frequencies with constraints on word type, word length, or
-	# punctuation.
-	def __call__(self, word):	
-		word = word.lower()							# Flatten word
-		if ' ' in word:								# If there are multiple input words, set phrase  
-			phrase = nltk.word_tokenize(word)		# 	to be the tokenized sentence
-			word = phrase[-1]						# Then set word to be the last word in the phrase
-		else:										# Else set phrase to only contain word
-			phrase = [word]
 
-		while word not in TERMINAL_PUNCT:			# Making sure the word isn't in any of the clause
-			if phrase[-1] in SPLIT_PUNCT:			# terminating punctuation lists, set prev to be
-				prev = phrase[-1]					# the last word of the phrase. Then, generate the
-			else:									# next word from the most likely word after prev
-				prev = phrase[-1]					# from the n-gram generated list
-			for next in self.cdf[word]:
-				if next == word:					# Don't accept duplicate words and symbols
-					continue						# Don't allow the sent len be <.5 the avg length
+    # Generates phrases through bigram frequencies with constraints on word type, word length, or
+    # punctuation.
+    def __call__(self, word=None):    
+        n = 15 
+        self.ngrams = self.__makeNgrams(n)
 
-				if not (next.isalpha() or next.isdigit()) and not next in CLAUSE_TERMINALS:
-					continue
-				
-				if next in TERMINAL_PUNCT and len(phrase) < self.avg_sent_len/2:
-					continue
+        def gen(seed=None):
+            if not seed:
+                seed = random.choice(self.starts)            
+            return self.__markovGen(self.ngrams, n, 1000, seed)
 
-				# We select a word with <4 chars after a preceding word of <4 chars only a small
-				# amount of chance to avoid repetition common, short words. 
-				if not next in phrase[int(-len(phrase)/2):]:
-					prev_phrase = [prev, next]
-					if not ' '.join(prev_phrase) in ' '.join(phrase):
-						if not (len(next) < 4 and (len(prev) < 4) and not random.randint(0,6)):
-							word = next
+        return gen()
 
-			if word == phrase[-1]:
-				phrase.append('\n')
-				break
+    def __makeNgrams(self, n):
+        """
+        Generate n-grams from corpus
+        Returns a dictionary of k-grams (from 2 to nth degree)
+        """
+        cfds = []
+        ngrams = dict()
+        itergrams = dict()
 
-			phrase.append(word)
+        for k in range(2,n+1):
+            itergrams[k] = list(nltk.ngrams(self.words, k))
 
-		for index, word in enumerate(phrase[:]):
-			freq = self.flat_cdf[word]
-			if freq:
-				phrase[index] = freq.max()
-		phrase = ' '.join(phrase)
+        for k, grams in itergrams.items():
+            kgrams = defaultdict(Counter)
+            for gram in grams:                
+                kgram = list(gram)
+                key = ' '.join(kgram[:k-1])
+                kgrams[key].update({kgram[-1]})
+            ngrams[k] = kgrams
+        return ngrams
 
-		phrase = phrase[0].upper() + phrase[1:]
-		
-		for symbol in CLAUSE_TERMINALS:
-			phrase = phrase.replace(' %s' % symbol, symbol)
-		return phrase 
+    # Generates sentences using a n degree Markov model
+    def __markovGen(self, ngrams, n, length, start):
+        """
+        Param:
+            ngrams : dict
+                Dictionary of n-grams
+                Each key is a word in the corpus
+                Each value are possible n-grams with the starting word
 
-	# Gets list of clause terminals
-	def getTerminalPunct(self):
-		return CLAUSE_TERMINALS
+            length : int
+                Sentence length
+
+            start : string
+                Starting word for the generated sentence
+                Randomly chosen if not specified
+        """
+        sent = [start]
+        prev = start
+        for i in range(length):
+            k = len(sent)+1 if len(sent)+1 < n else n
+            while not ngrams[k][prev] and k > 2:
+                k -= 1
+            prev = ' '.join(sent[-k+1:])
+
+            if prev in SPLIT_PUNCT:
+                weightedChoices = [(candidate, weight) for (candidate, weight) in ngrams[k][prev].most_common(10) \
+                                    if candidate in self.resume]
+            else:
+                weightedChoices = [(candidate, weight) for (candidate, weight) in ngrams[k][prev].most_common(10)]
+            
+            # Choose next candidate word based on a cumulative weight distribution
+            choices, weights = zip(*weightedChoices)
+            cumdist = list(itertools.accumulate(weights))
+            choice = random.random() * cumdist[-1]
+            next = choices[bisect.bisect(cumdist, choice)]
+            sent.append(next)
+            
+        ret = ' '.join(sent)
+        cleanPunct = CLAUSE_TERMINALS + ['\'','n\'t',':',')']
+        for punct in cleanPunct:
+            ret = ret.replace(' %s' % punct, punct)
+        ret = ret.replace('%s ' % '(', '(')
+        return ret
+
+    # Gets list of clause terminals
+    def getTerminalPunct(self):
+        return CLAUSE_TERMINALS
+
+
 
