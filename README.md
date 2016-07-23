@@ -28,3 +28,6 @@ Coding Standards:
   - PEP 8 Style Guide https://www.python.org/dev/peps/pep-0008/
   - Self Documenting Variables (as much as possible
   - Comments
+
+Link to Scraped Data:
+https://dl.dropboxusercontent.com/u/73386885/Data.zip
