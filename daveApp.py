@@ -36,7 +36,10 @@ class GenreList():
 # Create a list of Genres
 # Each genre has a number associated to it given by its position
 # I.e. SciFi: 0, Comedy: 1, etc.
-genres = GenreList('SciFi', 'Comedy', 'Thriller', 'Drama')
+genres = GenreList('Action', 'Adventure', 'Animation', 'Comedy', 'Crime',
+                   'Drama', 'Family', 'Fantasy', 'Film-Noir', 'Horror',
+                   'Musical','Mystery', 'Romance', 'Sci-Fi', 'Short', 
+                   'Thriller', 'War', 'Western')
 
 # Set up some variables
 genreNames = genres.getNameList()
@@ -58,7 +61,7 @@ class DAVEapp(tk.Tk):
 
         # Sets up a main frame for each class
         self.frames = {}
-        pages = (HomePage, Page)
+        pages = (HomePage, CharacterPage)
         for P in pages:
             frame = P(container, self) # Constructs the class
             self.frames[P] = frame
@@ -99,7 +102,7 @@ class HomePage(tk.Frame):
         for i in range(numGenres):
             btnList.make_button(frames[i], btnNames[i])
             btnList.config_button(i, lambda i=i: 
-                                  runSpecificGenre(i, controller, Page))
+                                  runSpecificGenre(i, controller, CharacterPage))
             btnList.show_button(BOTTOM, i)
         bottomButton = tk.Button(botFrame, text='Surprise Me', 
                                  command=lambda: runRandomGenre())
@@ -132,7 +135,7 @@ def setOutputMode(flag):
             mode = Genre         # we want to run that genre
     return mode
 
-class Page(tk.Frame):
+class CharacterPage(tk.Frame):
     def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent)
 
