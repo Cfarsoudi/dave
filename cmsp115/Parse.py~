@@ -1,0 +1,180 @@
+import random
+
+#helper function to print because Python 3.4 doesn't just print strings 
+#normally.
+#this function prints output to a given output file as a string
+def outPrint(words,out):
+    out.write(words.decode('UTF-8'))
+
+#print to output file, followed by a newline character
+def outPrintln(words,out):
+    outprint(words,out)
+    out.write('\n')
+
+#returns true if a list is empty
+def empty(lis):
+    return (len(lis)==0)
+
+#pops and removes a random item from a list
+def randomPop(lis):
+    rand = int(random.random()*len(lis))
+    if(rand == len(lis) and not empty(lis)):
+        rand=rand-1
+    elif(empty(lis)):
+        print('empty')
+    obj = lis[rand]
+    lis.remove(obj)
+    return obj
+
+#the director decides what to print out next
+def stanley(head, act, char, paren, dia, trans,out):
+    needHeader = True
+    needAction = False
+    needCharacter = False
+    needDialog = False
+    needTransition = False
+    needParanthetical = False
+    while(not (empty(head) and empty(act) and empty(char) 
+            and empty(paren) and empty (dia) and empty(trans))):
+        if(needCharacter and needTransition and needAction and needHeader):
+            rand = random.random()*(len(head)+len(act)+len(char)+len(trans))
+            if(rand <=len(head) and not empty(head)):
+                currentScene = randomPop(head)
+                outputFile.write('location: ')
+                outprint(currentScene,out)
+                needHeader = False
+                needAction = True
+            elif(rand <= len(act)+len(head) and not empty(act)):
+                nextAction = randomPop(act)
+                outputFile.write('action:')
+                outprint(nextAction,out)
+                needCharacter = True
+                needTransition = True
+                needHeader = True
+            elif(rand <= len(char)+len(act)+len(head) and not empty(char)):
+                nextChar = randomPop(char)
+                outputFile.write('character:')
+                outprint(nextChar, out)
+                needDialog = True
+                needParanthetical = True
+            elif(rand <= len(trans)+len(act)+len(char)+len(head) 
+                    and not empty(trans)):
+                nexttrans = randomPop(trans)
+                outputFile.write('transition:')
+                outprint(nexttrans,out)
+                needHeader = True
+                needTransition = False
+        if(needDialog):
+            if(needParanthetical 
+                   and random.random()*(len(dia)+len(paren))<=len(paren) 
+                   and not empty(paren)):
+                nextPara = randomPop(paren)
+                outputFile.write('paranthetical:')
+                outprint(nextPara, out)
+                needParanthetical = False
+                nextPhrase = randomPop(dia)
+                outputFile.write('dialog:')
+                outprint(nextPhrase, out)
+                needDialog = False
+                needHeader = True
+                needAction = True
+                needTransition = True
+                needCharacter = True
+            elif(not empty(dia)):
+                nextPhrase = randomPop(dia)
+                outputFile.write('dialog:')
+                outprint(nextPhrase, out)
+                needDialog = False
+                needHeader = True
+                needAction = True
+                needTransition = True
+                needCharacter = True
+        elif(needAction and not empty(act)):
+            nextAction = randomPop(act)
+            outputFile.write('Action:')
+            outprint(nextAction,out)
+            needCharacter = True
+            needTransition = True
+            needHeader = True
+        elif(needHeader and not empty(head)):
+            currentScene = randomPop(head)
+            outputFile.write('Location:')
+            outprint(currentScene,out)
+            needHeader = False
+            needAction = True
+        else:
+            return#print('unaccounted for')#return
+    return
+
+#here we open up our input and output files 
+#and setup the booleans that will control our parsing
+inputFile = open('input', 'rb+')
+outputFile = open("output","w")
+char = False
+paren = False
+Dialog = False
+
+#lists for storing lines of text
+action = []
+character = []
+heading = []
+transitions = []
+dialog = []
+paranthetical = []
+
+# convert the given spreadsheet into a list, containing 
+# each of its lines as a single line
+listFile = inputFile.readlines()
+
+# split each item in listFile (line from the spreadsheet) on 'tab' characters
+# so that each line is now a list of answers to the survey questions
+# this will make accessing individual elements that we judge for 
+# clustering each respondent easier
+for c in range(len(listFile)):
+    line = listFile[c]
+    if len(line) > 1:
+        first = line.split()[0]
+        if first.upper().decode('UTF-8') == 'INT.' 
+                or first.upper().decode('UTF-8') == 'EXT.':
+            char = False
+            paren = False
+            heading.append(line)
+        elif line.isupper():
+            deline = line.decode('UTF-8')
+            if deline == 'CUT TO:\n' or deline == 'FADE IN:\n' 
+                    or deline == 'FADE OUT:\n' or deline == 'DISSOLVE TO:\n' 
+                    or deline == 'SMASH CUT:\n' or deline == 'END CREDITS\n':
+                transitions.append(line)
+            else:
+                character.append(line)
+                char = True
+        elif char and first[0] == 40 and first[len(first)-1] == 41:
+            char = False
+            paren = True
+            paranthetical.append(line)
+        elif char or paren:
+            char = False
+            paren = False
+            dialog.append(line)
+        else:
+            char = False
+            paren = False
+            action.append(line)
+
+print(action)
+print(dialog)
+print(paranthetical)
+print(character)
+print(heading)
+print(transitions)
+
+stanley(heading,action,character,paranthetical,dialog,transitions,outputFile)
+
+print('=====================================================================')
+
+print(action)
+print(dialog)
+print(paranthetical)
+print(character)
+print(heading)
+print(transitions)
