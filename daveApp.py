@@ -15,17 +15,32 @@ SMALL_FONT = ('Verdana', 15)
 DAVE_FONT = ('American Typewriter', 30)
 SMALL_DAVE = ('American Typewriter', 20)
 
-# Name the genres here
-genreNames = ['SciFi', 'Comedy', 'Thriller', 'Drama']
-numGenres = len(genreNames)
+class Genre():
+    def __init__(self, name, number):
+        self.name = name
+        self.number = number
 
-# Flags to signal different genres for script output
-class Genre(Enum):  
-        
-        SciFi = 0
-        Comedy = 1
-        Thriller = 2
-        Drama = 3
+class GenreList():
+    def __init__(self, *args):
+        self.list = []
+        for index, arg in enumerate(args):
+            self.list.append(Genre(arg, index))
+        self.length = len(self.list)
+
+    def getNameList(self):
+        nameList = []
+        for Genre in self.list:
+            nameList.append(Genre.name)
+        return nameList
+
+# Create a list of Genres
+# Each genre has a number associated to it given by its position
+# I.e. SciFi: 0, Comedy: 1, etc.
+genres = GenreList('SciFi', 'Comedy', 'Thriller', 'Drama')
+
+# Set up some variables
+genreNames = genres.getNameList()
+numGenres = genres.length
 
 class DAVEapp(tk.Tk):
 
@@ -99,20 +114,22 @@ class HomePage(tk.Frame):
 def runRandomGenre():
     global outputMode
     outputMode = setOutputMode(randint(0,numGenres-1)) # Sets a random genre
-    print('Execute main program...')
-    print('Random global mode enum: ',outputMode)
+
+    print('Output name: ',outputMode.name)
+    print('Output number: ',outputMode.number)
     # Should output a script after calling this function
     
-def runSpecificGenre(index, controller, cls):
+def runSpecificGenre(flag, controller, cls):
     global outputMode
-    outputMode = setOutputMode(index)
+    outputMode = setOutputMode(flag)
     controller.showFrame(cls)
-    print('Global mode enum: ',outputMode)
+    print('Output name: ',outputMode.name)
+    print('Output number: ',outputMode.number)
 
-def setOutputMode(index):
-    for genre in Genre:
-        if index == genre.value: # If the index matches the enum,
-            mode = genre         # set the correct mode
+def setOutputMode(flag):
+    for Genre in genres.list:
+        if flag == Genre.number: # If the index matches the number,
+            mode = Genre         # we want to run that genre
     return mode
 
 class Page(tk.Frame):

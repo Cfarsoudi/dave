@@ -1,2 +1,5 @@
 # Ignore the pycaches
 __pycache__
+
+# Ignore the .jpgs not in the Posters folder
+/*.jpg
