@@ -31,7 +31,6 @@ class DAVEapp(tk.Tk):
 
     def __init__(self, *args, **kwargs):
         tk.Tk.__init__(self, *args, **kwargs)
-        # tk.Tk.iconbitmap(self, default='clienticon.ico') # has to be an .ico
         tk.Tk.wm_title(self, 'DAVE')
         # self.minsize(width=1000, height=600)
         # self.maxsize(width=1000, height=600)
