@@ -35,7 +35,7 @@ class GenreList():
 
 # Create a list of Genres
 # Each genre has a number associated to it given by its position
-# I.e. SciFi
+# I.e. SciFi: 0, Comedy: 1, etc.
 genres = GenreList('SciFi', 'Comedy', 'Thriller', 'Drama')
 
 # Set up some variables
@@ -47,7 +47,6 @@ class DAVEapp(tk.Tk):
     def __init__(self, *args, **kwargs):
         tk.Tk.__init__(self, *args, **kwargs)
         tk.Tk.wm_title(self, 'DAVE')
-        self.mode = 0
         # self.minsize(width=1000, height=600)
         # self.maxsize(width=1000, height=600)
 
