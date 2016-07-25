@@ -1,11 +1,10 @@
-'''
+''' 
 generator.py
 
-Generates sentences through predicting the next possible word in sentence based on the context 
-of its preceding words. The next word selected is based on conditional frequency distributions 
-of bigrams found in the text. 
-
-Modified from Chris Moyer's <cmoyer@newstex.com>
+Generates sentences through predicting the next possible word in sentence
+based on the context of its preceding words. The next word selected is based
+on conditional frequency distributions of n-grams found in the text, with 
+(1<k<n) fallback k-grams.
 '''
 
 import nltk, random, itertools, bisect
@@ -30,7 +29,7 @@ class sentGenerator(object):
             for sent in self.sents:
                 sent = nltk.word_tokenize(sent)
                 self.starts.append(sent[0])
-                self.ends.append(sent[-2])
+                self.ends.append(sent[-1])
                 for punct in SPLIT_PUNCT:
                     split = ' '.join(sent).split(punct)
                     if len(split) > 1:
@@ -38,12 +37,8 @@ class sentGenerator(object):
                             clause = clause.split()
                             self.pause.append(clause[-1])
                             self.resume.append(clause[0])
-            # self.avgLen = int(len(self.words)/len(self.sents))
-        # self.text = ''
 
-
-    # Generates phrases through bigram frequencies with constraints on word type, word length, or
-    # punctuation.
+    
     def __call__(self, word=None):    
         n = 15 
         self.ngrams = self.__makeNgrams(n)
@@ -101,10 +96,12 @@ class sentGenerator(object):
             prev = ' '.join(sent[-k+1:])
 
             if prev in SPLIT_PUNCT:
-                weightedChoices = [(candidate, weight) for (candidate, weight) in ngrams[k][prev].most_common(10) \
+                weightedChoices = [(candidate, weight) for (candidate, weight) \
+                                    in ngrams[k][prev].most_common(10)
                                     if candidate in self.resume]
             else:
-                weightedChoices = [(candidate, weight) for (candidate, weight) in ngrams[k][prev].most_common(10)]
+                weightedChoices = [(candidate, weight) for (candidate, weight) \
+                                   in ngrams[k][prev].most_common(10)]
             
             # Choose next candidate word based on a cumulative weight distribution
             choices, weights = zip(*weightedChoices)

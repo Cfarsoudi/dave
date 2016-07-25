@@ -1,3 +1,10 @@
+''' 
+DAVE.py
+
+Generates screenplay using Markov models of a genre-separated 
+screenplay corpus.
+'''
+
 import zipfile, argparse, os, nltk, operator, re, sys, random
 from collections import defaultdict
 from nltk.text import ContextIndex
