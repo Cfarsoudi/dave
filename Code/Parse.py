@@ -4,7 +4,7 @@ import random
 #normally.
 #this function prints output to a given output file as a string
 def outPrint(words,out):
-    out.write(words.decode('UTF-8'))
+    out.write(words)#.decode('UTF-8'))
 
 #print to output file, followed by a newline character
 def outPrintln(words,out):
@@ -126,29 +126,45 @@ paranthetical = []
 # each of its lines as a single line
 listFile = inputFile.readlines()
 
+#holding variables for multi-line chunks of dialog or action direction
+MLdialog=''
+MLaction=""
+
 # split each item in listFile (line from the spreadsheet) on 'tab' characters
 # so that each line is now a list of answers to the survey questions
 # this will make accessing individual elements that we judge for 
 # clustering each respondent easier
 for c in range(len(listFile)):
-    line = listFile[c]
+    line = listFile[c].decode('UTF-8')
     if len(line) > 1:
-        print(line.split())
-        print(len(line.split()))
+        #print(line.split())
+        #print(len(line.split()))
         if(len(line.split())==0):
             continue
         first = line.split()[0]
-        if (first.upper().decode('UTF-8') == 'INT.' 
-                or first.upper().decode('UTF-8') == 'EXT.'):
+        #print (first)
+        if (first.upper() == 'INT.' 
+                or first.upper() == 'EXT.'):
             char = False
             paren = False
             heading.append(line)
         elif line.isupper():
-            deline = line.decode('UTF-8')
-            if (deline == 'CUT TO:\n' or deline == 'FADE IN:\n' 
+            deline = line.lstrip(' ')
+            #print (deline[0])
+            if(deline == 'CUT TO:\n' or deline == 'FADE IN:\n' 
                     or deline == 'FADE OUT:\n' or deline == 'DISSOLVE TO:\n' 
-                    or deline == 'SMASH CUT:\n' or deline == 'END CREDITS\n'):
+                    or deline == 'SMASH CUT:\n' or deline == 'END CREDITS\n'
+                    or deline == 'CUT TO BLACK.\n'  or deline == 'CONTINUED:\n'
+                    or deline == '(CONTINUED)\n'):
                 transitions.append(line)
+            elif char and deline[0] == '(': # and first[len(first)-1] == 41:
+                # if(deline[len(deline)-1] != ')'):
+                #     while(deline[len(deline)-1] != ')' and c+1<len(listFile)):
+                #         line = line + listFile[c+1].decode('UTF-8')
+                #         c= c+1
+                char = False
+                paren = True
+                paranthetical.append(line)
             else:
                 character.append(line)
                 char = True
@@ -160,6 +176,20 @@ for c in range(len(listFile)):
             char = False
             paren = False
             dialog.append(line)
+            if(c < len(listFile)):
+                nextIndent=(len(listFile[c+1])-len(listFile[c+1].decode('UTF-8').lstrip(' ')))
+                currIndent=(len(listFile[c])-len(listFile[c].decode('UTF-8').lstrip(' ')))
+                print(currIndent)
+                print(nextIndent)
+                if(currIndent>nextIndent):
+                    print(MLdialog)
+                    char = False
+                    paren = False
+                    dialog.append(MLdialog)
+                    MLdialog=''
+                elif(currIndent==nextIndent):
+                    print(MLdialog)
+                    MLdialog=MLdialog+line
         else:
             char = False
             paren = False
@@ -174,11 +204,11 @@ print(transitions)
 
 stanley(heading,action,character,paranthetical,dialog,transitions,outputFile)
 
-print('=====================================================================')
+#print('=====================================================================')
 
-print(action)
-print(dialog)
-print(paranthetical)
-print(character)
-print(heading)
-print(transitions)
+#print(action)
+#print(dialog)
+#print(paranthetical)
+#print(character)
+#print(heading)
+#print(transitions)
