@@ -33,6 +33,11 @@ class GenreList():
             nameList.append(Genre.name)
         return nameList
 
+    def appendList(self, *args):
+        for index, arg in enumerate(args):
+            self.list.append(Genre(arg, index))
+        self.length = len(self.list)
+
 # Create a list of Genres
 # Each genre has a number associated to it given by its position
 # I.e. SciFi: 0, Comedy: 1, etc.
@@ -45,7 +50,7 @@ genres = GenreList('Action', 'Adventure', 'Animation', 'Comedy', 'Crime',
 genreNames = genres.getNameList()
 numGenres = genres.length
 
-class DAVEapp(tk.Tk):
+class DaveApp(tk.Tk):
 
     def __init__(self, *args, **kwargs):
         tk.Tk.__init__(self, *args, **kwargs)
@@ -53,23 +58,34 @@ class DAVEapp(tk.Tk):
         # self.minsize(width=1000, height=600)
         # self.maxsize(width=1000, height=600)
 
-        # Sets up the main frame that hold all others
+        # Sets up the frame that holds all others
         container = tk.Frame(self)
         container.pack(side=TOP, fill=BOTH, expand=True)
         container.grid_rowconfigure(0, weight=1)
         container.grid_columnconfigure(0, weight=1)
 
-        # Sets up a main frame for each class
-        self.frames = {}
-        pages = (HomePage, CharacterPage)
-        for P in pages:
-            frame = P(container, self) # Constructs the class
-            self.frames[P] = frame
-            frame.grid(row=0, column=0, sticky='NSEW')
-            self.showFrame(HomePage)
+        # Sets up a primary frame for each class
+        # self.frames = {}
+        # pages = (HomePage, CharacterPage)
+        # for Page in pages:
+        #     frame = Page(parent=container, controller=self) # Constructs the class
+        #     self.frames[Page] = frame
+        #     frame.grid(row=0, column=0, sticky='NSEW')
+        self.frames = self.constructFrames(container)
+        self.showFrame(HomePage)
 
-    def showFrame(self, cont):
-        frame = self.frames[cont]
+    def constructFrames(self, parent):
+        frames = {}
+        pages = (HomePage, CharacterPage)
+        for Page in pages:
+            frame = Page(parent=parent, controller=self) # Constructs the class
+            frames[Page] = frame
+            frame.grid(row=0, column=0, sticky='NSEW')
+        return frames
+
+
+    def showFrame(self, controller):
+        frame = self.frames[controller]
         frame.tkraise()
 
 
@@ -154,5 +170,5 @@ class CharacterPage(tk.Frame):
         button1.pack()
 
 if __name__ == '__main__':
-    app = DAVEapp()
+    app = DaveApp()
     app.mainloop()
