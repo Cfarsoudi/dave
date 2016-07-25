@@ -65,12 +65,6 @@ class DaveApp(tk.Tk):
         container.grid_columnconfigure(0, weight=1)
 
         # Sets up a primary frame for each class
-        # self.frames = {}
-        # pages = (HomePage, CharacterPage)
-        # for Page in pages:
-        #     frame = Page(parent=container, controller=self) # Constructs the class
-        #     self.frames[Page] = frame
-        #     frame.grid(row=0, column=0, sticky='NSEW')
         self.frames = self.constructFrames(container)
         self.showFrame(HomePage)
 

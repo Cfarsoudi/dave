@@ -9,13 +9,8 @@ class DaveAppTestCase(unittest.TestCase):
 	def tearDown(self):
 		pass
 
-# 	def testConstructFrames(self):
-# 		assert isinstance(self.app.frames[Homepage], Homepage) == True
+	def testConstructFrames(self):
+		pass
 
-# DaveAppTestSuite = unittest.TestSuite()
-# DaveAppTestSuite.addTest(DaveAppTestCase('testFrameGeneration'))
-# #genreTestSuite.addTest(DaveAppTestCase('testGenreNumber'))
-
-# runner = unittest.TextTestRunner()
-
-# runner.run(DaveAppTestSuite)
+	def tearDown(self):
+		pass
