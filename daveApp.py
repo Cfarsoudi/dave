@@ -7,18 +7,7 @@ from buttonList import ButtonList
 from enum import Enum
 from random import randint
 
-import zipfile, argparse, os, nltk, operator, re, sys, random
-from collections import defaultdict
-from nltk.text import ContextIndex
-from nltk.parse.stanford import StanfordParser
-from generator import sentGenerator
-
 global outputMode
-
-# parser = argparse.ArgumentParser()
-# parser.add_argument('i')
-# parser.add_argument('o')
-# args = parser.parse_args()
 
 # Constant fonts
 LARGE_FONT = ('Verdana', 30)
@@ -55,7 +44,7 @@ class GenreList():
 genres = GenreList('Action', 'Adventure', 'Animation', 'Comedy', 'Crime',
                    'Drama', 'Family', 'Fantasy', 'Film-Noir', 'Horror',
                    'Musical','Mystery', 'Romance', 'Sci-Fi', 'Short', 
-                   'Thriller', 'War',)
+                   'Thriller', 'War', 'Western')
 
 # Set up some variables
 genreNames = genres.getNameList()
@@ -87,6 +76,7 @@ class DaveApp(tk.Tk):
             frames[Page] = frame
             frame.grid(row=0, column=0, sticky='NSEW')
         return frames
+
 
     def showFrame(self, controller):
         frame = self.frames[controller]
@@ -128,10 +118,6 @@ class HomePage(tk.Frame):
                                  command=lambda: runRandomGenre())
         bottomButton.pack(side=BOTTOM, pady=10)
 
-        autoGenButton = tk.Button(botFrame, text='Generate Now!',
-                                  command=lambda: generateScript())
-        autoGenButton.pack(side=BOTTOM, pady=10)
-
         labels = ImageLabels('exmachina.jpg', 'pineapple.jpg', 
                              'pulpfiction.jpg', 'titanic.jpg')
         for index in range(labels.length()):
@@ -158,17 +144,6 @@ def setOutputMode(flag):
         if flag == Genre.number: # If the index matches the number,
             mode = Genre         # we want to run that genre
     return mode
-
-# Ideally this begins all script generation
-# Takes in the outputMode and generates text based
-# on the genre given by the outputMode flag
-def generateScript(outputMode):
-    base_text = open('dead_poets_final.txt', 'rU', encoding='utf-8').read()
-    base_sents = nltk.sent_tokenize(base_text)
-    gen = sentGenerator(base_text)
-    output = open('test.txt', 'w', encoding="utf-8")
-    text = gen()
-    output.write(text)
 
 class CharacterPage(tk.Frame):
     def __init__(self, parent, controller):
