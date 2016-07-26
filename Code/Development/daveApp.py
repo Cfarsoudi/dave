@@ -42,9 +42,9 @@ class GenreList():
 # Each genre has a number associated to it given by its position
 # I.e. SciFi: 0, Comedy: 1, etc.
 genres = GenreList('Action', 'Adventure', 'Animation', 'Comedy', 'Crime',
-                   'Drama', 'Family', 'Fantasy', 'Film-Noir', 'Horror',
-                   'Musical','Mystery', 'Romance', 'Sci-Fi', 'Short', 
-                   'Thriller', 'War', 'Western')
+                   'Drama', 'Family', 'Fantasy', 'Horror',
+                   'Mystery', 'Romance', 'Sci-Fi',
+                   'Thriller', 'War')
 
 # Set up some variables
 genreNames = genres.getNameList()
@@ -139,8 +139,11 @@ class HomePage(tk.Frame):
                                  command=lambda: runRandomGenre())
         bottomButton.pack(side=BOTTOM, pady=10)
 
-        labels = ImageLabels('exmachina.jpg', 'pineapple.jpg', 
-                             'pulpfiction.jpg', 'titanic.jpg')
+        labels = ImageLabels('diehard.jpg','indiana_jones.jpg', 'totoro.jpg',
+                             'pineapple.jpg', 'godfather.jpg', 'titanic.jpg',
+                             'up.jpg', 'panslab.jpg', 'shining.jpg',
+                             'maltese.jpg', 'casablanca.jpg',
+                             'exmachina.jpg', 'pulpfiction.jpg', 'zero.jpg')
         for index in range(labels.length()):
             labels.labelImage(horizontalFrames[index], index)
         labels.displayImages(BOTTOM)
