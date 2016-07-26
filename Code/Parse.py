@@ -1,232 +1,135 @@
-import random
+"""
+Parse.py 
+Parses screenplays into subsections.
+Returns a compilation of all headings, characters, transitions, actions,
+parentheticals, and dialogue as separate files.
+"""
+import argparse
 
-#helper function to print because Python 3.4 doesn't just print strings 
-#normally.
-#this function prints output to a given output file as a string
-def outPrint(words,out):
-    out.write(words)#.decode('UTF-8'))
+# Parser for command line arguments
+# This module takes one filename
+# an input file which will have its
+# contents parsed
+# and one genre name which describes
+# the content of the input file
+parser = argparse.ArgumentParser()
+parser.add_argument('i')
+parser.add_argument('o')
+args = parser.parse_args()
 
-#print to output file, followed by a newline character
-def outPrintln(words,out):
-    outprint(words,out)
-    out.write('\n')
+if __name__ == '__main__':
 
-#returns true if a list is empty
-def empty(lis):
-    return (len(lis)==0)
+    # here we open up our input and output files 
+    # our input file should contain a movie script or series of scripts
+    # we will set up output files for each type of text format
+    # (ie: scene headings, action, transitions, etc.)
+    # and setup the booleans that will control our parsing
 
-#pops and removes a random item from a list
-def randomPop(lis):
-    rand = int(random.random()*len(lis))
-    if(rand == len(lis) and not empty(lis)):
-        rand=rand-1
-    elif(empty(lis)):
-        print('empty')
-    obj = lis[rand]
-    lis.remove(obj)
-    return obj
+    genre = args.o + '_'
+    inputFile = open(args.i, 'rU', encoding="UTF-8")
+    outHead = open("%sHeadings" % genre,"w", encoding='UTF-8')
+    outAct = open("%sActions" % genre,"w", encoding='UTF-8')
+    outChar = open("%sCharacters" % genre, "w", encoding='UTF-8')
+    outDia = open("%sDialogue" % genre,"w", encoding='UTF-8')
+    outParen = open("%sParentheticals" % genre,"w", encoding='UTF-8')
+    outTrans = open("%sTransitions" % genre,"w", encoding='UTF-8')
 
-#the director decides what to print out next
-def stanley(head, act, char, paren, dia, trans,out):
-    needHeader = True
-    needAction = False
-    needCharacter = False
-    needDialog = False
-    needTransition = False
-    needParanthetical = False
-    while(not (empty(head) and empty(act) and empty(char) 
-            and empty(paren) and empty (dia) and empty(trans))):
-        if(needCharacter and needTransition and needAction and needHeader):
-            rand = random.random()*(len(head)+len(act)+len(char)+len(trans))
-            if(rand <=len(head) and not empty(head)):
-                currentScene = randomPop(head)
-                outputFile.write('location: ')
-                outPrint(currentScene,out)
-                needHeader = False
-                needAction = True
-            elif(rand <= len(act)+len(head) and not empty(act)):
-                nextAction = randomPop(act)
-                outputFile.write('action:')
-                outPrint(nextAction,out)
-                needCharacter = True
-                needTransition = True
-                needHeader = True
-            elif(rand <= len(char)+len(act)+len(head) and not empty(char)):
-                nextChar = randomPop(char)
-                outputFile.write('character:')
-                outPrint(nextChar, out)
-                needDialog = True
-                needParanthetical = True
-            elif(rand <= len(trans)+len(act)+len(char)+len(head) 
-                    and not empty(trans)):
-                nexttrans = randomPop(trans)
-                outputFile.write('transition:')
-                outPrint(nexttrans,out)
-                needHeader = True
-                needTransition = False
-        if(needDialog):
-            if(needParanthetical 
-                   and random.random()*(len(dia)+len(paren))<=len(paren) 
-                   and not empty(paren)):
-                nextPara = randomPop(paren)
-                outputFile.write('paranthetical:')
-                outPrint(nextPara, out)
-                needParanthetical = False
-                nextPhrase = randomPop(dia)
-                outputFile.write('dialog:')
-                outPrint(nextPhrase, out)
-                needDialog = False
-                needHeader = True
-                needAction = True
-                needTransition = True
-                needCharacter = True
-            elif(not empty(dia)):
-                nextPhrase = randomPop(dia)
-                outputFile.write('dialog:')
-                outPrint(nextPhrase, out)
-                needDialog = False
-                needHeader = True
-                needAction = True
-                needTransition = True
-                needCharacter = True
-        elif(needAction and not empty(act)):
-            nextAction = randomPop(act)
-            outputFile.write('Action:')
-            outPrint(nextAction,out)
-            needCharacter = True
-            needTransition = True
-            needHeader = True
-        elif(needHeader and not empty(head)):
-            currentScene = randomPop(head)
-            outputFile.write('Location:')
-            outPrint(currentScene,out)
-            needHeader = False
-            needAction = True
-        else:
-            return#print('unaccounted for')#return
-    return
+    char = False
+    paren = False
+    Dialog = False
 
-#here we open up our input and output files 
-#and setup the booleans that will control our parsing
-inputFile = open('input', 'rU', encoding="utf-8")
-outputFile = open("output","w")
-char = False
-paren = False
-Dialog = False
+    #lists for storing lines of text
+    heading = []
+    character = []
+    action = []
+    dialog = []
+    parenthetical = []
+    transitions = []
 
-#lists for storing lines of text
-action = []
-character = []
-heading = []
-transitions = []
-dialog = []
-paranthetical = []
+    # convert the given spreadsheet into a list, containing 
+    # each of its lines as a single line
+    listFile = inputFile.readlines()
 
-# convert the given spreadsheet into a list, containing 
-# each of its lines as a single line
-listFile = inputFile.readlines()
+    #holding variables for multi-line chunks of dialog or action direction
+    MLdialog=''
+    MLaction=""
 
-#holding variables for multi-line chunks of dialog or action direction
-MLdialog=''
-MLaction=""
-
-# split each item in listFile (line from the spreadsheet) on 'tab' characters
-# so that each line is now a list of answers to the survey questions
-# this will make accessing individual elements that we judge for 
-# clustering each respondent easier
-for c in range(len(listFile)):
-    line = listFile[c]#.decode('UTF-8')
-    if len(line) > 1:
-        #print(line.split())
-        #print(len(line.split()))
-        if(len(line.split())==0):
-            continue
-        first = line.split()[0]
-        #print (first)
-        if (first.upper() == 'INT.' 
-                or first.upper() == 'EXT.'):
-            char = False
-            paren = False
-            heading.append(line)
-        elif line.isupper():
-            deline = line.lstrip(' ')
-            #print (deline[0])
-            if(deline == 'CUT TO:\n' or deline == 'FADE IN:\n' 
-                    or deline == 'FADE OUT:\n' or deline == 'DISSOLVE TO:\n' 
-                    or deline == 'SMASH CUT:\n' or deline == 'END CREDITS\n'
-                    or deline == 'CUT TO BLACK.\n'  or deline == 'CONTINUED:\n'
-                    or deline == '(CONTINUED)\n'):
-                transitions.append(line)
-            elif char and deline[0] == '(': # and first[len(first)-1] == 41:
-                # if(deline[len(deline)-1] != ')'):
-                #     while(deline[len(deline)-1] != ')' and c+1<len(listFile)):
-                #         line = line + listFile[c+1].decode('UTF-8')
-                #         c= c+1
+    # split each item in listFile (line from the spreadsheet) on 'tab' characters
+    # so that each line is now a list of answers to the survey questions
+    # this will make accessing individual elements that we judge for 
+    # clustering each respondent easier
+    for c in range(len(listFile)):
+        line = listFile[c]
+        if len(line) > 1:
+            if(len(line.split())==0):
+                continue
+            first = line.split()[0]
+            if (first.upper() == 'INT.' 
+                    or first.upper() == 'EXT.'):
+                char = False
+                paren = False
+                heading.append(line)
+            elif line.isupper():
+                deline = line.lstrip(' ')
+                if(deline == 'CUT TO:\n' or deline == 'FADE IN:\n' 
+                        or deline == 'FADE OUT:\n' or deline == 'DISSOLVE TO:\n' 
+                        or deline == 'SMASH CUT:\n' or deline == 'END CREDITS\n'
+                        or deline == 'CUT TO BLACK.\n'  or deline == 'CONTINUED:\n'
+                        or deline == '(CONTINUED)\n'):
+                    transitions.append(line)
+                elif char and deline[0] == '(':
+                    char = False
+                    paren = True
+                    parenthetical.append(line)
+                else:
+                    character.append(line)
+                    char = True
+            elif char and first[0] == '(':
                 char = False
                 paren = True
-                paranthetical.append(line)
+                parenthetical.append(line)
+            elif char or paren:
+                d = c
+                if(d < len(listFile)):
+                    nextIndent=(len(listFile[d+1])-len(listFile[d+1].lstrip(' ')))
+                    currIndent=(len(listFile[d])-len(listFile[d].lstrip(" ")))
+                    if(currIndent>nextIndent):
+                        MLdialog=MLdialog+line
+                        char = False
+                        paren = False
+                        if(len(MLdialog)!=0):
+                            dialog.append(MLdialog)
+                        MLdialog=''
+                    elif(currIndent==nextIndent):
+                        MLdialog=MLdialog+line
+                        if(d+1==len(listFile)):
+                            dialog.append(MLdialog)
+                    d=d+1
+                c=d
             else:
-                character.append(line)
-                char = True
-        elif char and first[0] == 40 and first[len(first)-1] == 41:
-            char = False
-            paren = True
-            paranthetical.append(line)
-        elif char or paren:
-            #char = False
-            #paren = False
-            #dialog.append(line)
-            d = c
-            if(d < len(listFile)):
-            #for d in range(c, len(listFile)-1):
-                nextIndent=(len(listFile[d+1])-len(listFile[d+1].lstrip(' ')))#.decode('UTF-8').lstrip(' ')))
-                currIndent=(len(listFile[d])-len(listFile[d].lstrip(" ")))#.decode('UTF-8').lstrip(' ')))
-                #print(currIndent)
-                #print(nextIndent)
-                if(currIndent>nextIndent):
-                    #print("finished"+ MLdialog)
-                    char = False
-                    paren = False
-                    if(len(MLdialog)!=0):
-                        dialog.append(MLdialog)
-                    MLdialog=''
-                elif(currIndent==nextIndent):
-                    print(MLdialog)
-                    MLdialog=MLdialog+line
-                d=d+1
-            c=d
-        else:
-            #char = False
-            #paren = False
-            #action.append(line)
-            if(c<len(listFile)):
-                nextIndent = len(listFile[c+1]) - len(listFile[c+1].lstrip(" "))
-                currIndent = len(listFile[c]) - len(listFile[c].lstrip(" "))
-                if(currIndent != nextIndent):
-                    char = False
-                    paren = False
-                    if(len(MLaction) != 0):
-                        action.append(MLaction)
-                    MLaction = ''
-                elif(currIndent == nextIndent):
-                    MLaction = MLaction + line
-                c=c+1
+                if(c<len(listFile)):
+                    if(c+1!=len(listFile)):
+                        nextIndent = len(listFile[c+1]) - len(listFile[c+1].lstrip(" "))
+                    else:
+                        nextIndent = len(listFile[c]) - len(listFile[c].lstrip(" "))
+                    currIndent = len(listFile[c]) - len(listFile[c].lstrip(" "))
+                    if(currIndent != nextIndent):
+                        char = False
+                        paren = False
+                        if(len(MLaction) != 0):
+                            action.append(MLaction)
+                        MLaction = ''
+                    elif(currIndent == nextIndent):
+                        MLaction = MLaction + line
+                        if(c+1==len(listFile)):
+                            action.append(MLaction)
+                    c=c+1
 
-
-print(action)
-print(dialog)
-print(paranthetical)
-print(character)
-print(heading)
-print(transitions)
-
-stanley(heading,action,character,paranthetical,dialog,transitions,outputFile)
-
-#print('=====================================================================')
-
-#print(action)
-#print(dialog)
-#print(paranthetical)
-#print(character)
-#print(heading)
-#print(transitions)
+    # write the contents from the text format lists
+    # to the appropriate output files
+    outHead.write(' '.join(heading))
+    outChar.write(' '.join(character))
+    outAct.write(' '.join(action))
+    outDia.write(' '.join(dialog))
+    outParen.write(' '.join(parenthetical))
+    outTrans.write(' '.join(transitions))
