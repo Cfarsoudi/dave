@@ -218,6 +218,8 @@ def generateScript(outputMode):
 
 
 def popUpSaveWindow():
+    # Generate popup window widget.
+    # print("Saved as a PDF.")
     pass
 
 class CharacterPage(tk.Frame):
