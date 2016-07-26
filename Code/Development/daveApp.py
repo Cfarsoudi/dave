@@ -58,6 +58,11 @@ class DaveApp(tk.Tk):
         # self.minsize(width=1000, height=600)
         # self.maxsize(width=1000, height=600)
 
+        self.attributes('-fullscreen', True) # This may not work on windows
+
+        # w, h = self.winfo_screenwidth(), self.winfo_screenheight()
+        # self.geometry("%dx%d+0+0" % (w, h))
+
         # Sets up the frame that holds all others
         container = tk.Frame(self)
         container.pack(side=TOP, fill=BOTH, expand=True)

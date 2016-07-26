@@ -1,5 +1,11 @@
 # Ignore the pycaches
 __pycache__
 
-# Ignore the .jpgs not in the Posters folder
+# Ignore .jpg's in the dave repo
+# But no recursivity, hence the forward slash
 /*.jpg
+
+# Ignore any .jpg's and .txt's used in Development or any
+# sub folder of Development
+Development/**/*.jpg
+Development/**/*.txt
