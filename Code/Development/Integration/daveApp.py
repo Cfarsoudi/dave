@@ -5,7 +5,6 @@ Generates screenplay using Markov models of a genre-separated
 screenplay corpus.
 '''
 
-
 from tkinter import *
 from tkinter.ttk import *
 import tkinter as tk
@@ -19,13 +18,6 @@ import argparse, nltk, random, pickle
 from collections import defaultdict
 from HAL import sentGenerator as gen
 from Stanley import director
-
-# global outputMode
-
-# parser = argparse.ArgumentParser()
-# parser.add_argument('i')
-# parser.add_argument('o')
-# args = parser.parse_args()
 
 # Constant fonts
 LARGE_FONT = ('Verdana', 30)
@@ -53,10 +45,10 @@ class GenreList():
 
 # Each genre has a number associated to it given by its position
 # I.e. Action: 0, Adventure: 1, etc.
-genres = GenreList('Action', 'Adventure', 'Animation', 'Comedy', 'Crime',
-                   'Drama', 'Family', 'Fantasy', 'Horror',
+genres = GenreList('Action', 'Adventure', 'Comedy', 'Crime',
+                   'Drama', 'Film-Noir', 'Fantasy', 'Horror',
                    'Mystery', 'Romance', 'Sci-Fi', 
-                   'Thriller', 'War',)
+                   'War',)
 
 # Initialize outputMode to a random genre
 # so that if the user wants to auto generate,
@@ -73,13 +65,8 @@ class DaveApp(tk.Tk):
     def __init__(self, *args, **kwargs):
         tk.Tk.__init__(self, *args, **kwargs)
         tk.Tk.wm_title(self, 'DAVE')
-        # self.minsize(width=1000, height=600)
-        # self.maxsize(width=1000, height=600)
 
         # self.attributes('-fullscreen', True) # This may not work on windows
-
-        # w, h = self.winfo_screenwidth(), self.winfo_screenheight()
-        # self.geometry("%dx%d+0+0" % (w, h))
 
         # Sets up the frame that holds all others
         self.container = tk.Frame(self)
@@ -157,15 +144,11 @@ class HomePage(tk.Frame):
                                  command=lambda: runRandomGenre())
         bottomButton.pack(side=BOTTOM, pady=5)
 
-        autoGenButton = tk.Button(botFrame, text='Generate Now!',
-                                  command=lambda: generateScript(outputMode))
-        autoGenButton.pack(side=BOTTOM, pady=2)
-
-        labels = ImageLabels('diehard.jpg','indiana_jones.jpg', 'totoro.jpg',
+        labels = ImageLabels('diehard.jpg','indiana_jones.jpg',
                              'pineapple.jpg', 'godfather.jpg', 'titanic.jpg',
-                             'up.jpg', 'panslab.jpg', 'shining.jpg',
+                             'double.jpg', 'panslab.jpg', 'shining.jpg',
                              'maltese.jpg', 'casablanca.jpg',
-                             'exmachina.jpg', 'pulpfiction.jpg', 'zero.jpg')
+                             'exmachina.jpg', 'zero.jpg')
 
         for index in range(labels.length()):
             labels.labelImage(horizontalFrames[index], index)
@@ -177,14 +160,15 @@ def runRandomGenre():
 
     print('Output name: ',outputMode.name)
     print('Output number: ',outputMode.number)
-    # Should output a script after calling this function
+    generateScript(outputMode)
     
 def runSpecificGenre(flag, controller, cls):
     global outputMode
     outputMode = setOutputMode(flag)
-    controller.showFrame(cls)
+    # controller.showFrame(cls)
     print('Output name: ',outputMode.name)
     print('Output number: ',outputMode.number)
+    generateScript(outputMode)
 
 def setOutputMode(flag):
     for Genre in genres.list:
@@ -198,14 +182,6 @@ def setOutputMode(flag):
 # It takes in the outputMode flag (type Genre) and generates text based
 # on the genre given by the flag
 def generateScript(outputMode):
-
-    # Check the outputMode to determine genre
-
-    # Then generate content and write it to the console (for now)
-
-    # Or actually you could just save it as a pdf and then call
-
-    # some some like popUpSaveWindow()
 
     genre = outputMode.name
     # iterate through all the files in the genre's directory
@@ -235,19 +211,10 @@ def generateScript(outputMode):
 
     actGen = gen(actions)
     diaGen = gen(dialogue)
-    output = open(args.o, 'w', encoding="utf-8")
+    output = open('test.txt', 'w', encoding="utf-8")
     stan = director(headings, characters, parentheticals, transitions,
                     actGen, diaGen, output)
     stan()
-
-    # base_text = open('dead_poets_final.txt', 'rU', encoding='utf-8').read()
-    # base_sents = nltk.sent_tokenize(base_text)
-    # gen = sentGenerator(base_text)
-    # output = open('test.txt', 'w', encoding="utf-8")
-    # text = gen()
-    # output.write(text)
-    
-
 
 def popUpSaveWindow():
     # Generate popup window widget.

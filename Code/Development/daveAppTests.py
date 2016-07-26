@@ -23,7 +23,8 @@ class AppTestCase(unittest.TestCase):
 	# 	self.assertIsNone(self.app.frames[HomePage])
 
 	def testOutputModes(self):
-		pass
+		self.value = self.setOutputMode(0).number
+		assert
 
 
 appTestSuite = unittest.TestSuite()
