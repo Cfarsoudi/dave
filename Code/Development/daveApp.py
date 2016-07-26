@@ -96,14 +96,29 @@ class HomePage(tk.Frame):
         # Setting up frames for organization of UI
         topFrame = tk.Frame(self)
         topFrame.pack(side=TOP, fill=X)
+        
+        topRow = tk.Frame(self)
+        topRow.pack(side=TOP, fill=BOTH)
+        
         botFrame = tk.Frame(self)
         botFrame.pack(side=BOTTOM, fill=X)
 
-        # Frames for each genre & movie poster
-        frames = []
-        for i in range(numGenres):
-            frames.append(tk.Frame(self))
-            frames[i].pack(side=LEFT, fill=X, expand=1)
+        botRow = tk.Frame(self)
+        botRow.pack(side=BOTTOM, fill=BOTH)
+
+        k = int(numGenres/2)
+        n = numGenres
+
+        # Half of the frames for each genre & movie poster in top row
+        horizontalFrames = []
+        for i in range(0,k):
+            horizontalFrames.append(tk.Frame(topRow))
+            horizontalFrames[i].pack(side=LEFT, fill=X, expand=1)
+
+        # Half of the frames for each genre & movie poster in bottom row
+        for i in range(k,n):
+            horizontalFrames.append(tk.Frame(botRow))
+            horizontalFrames[i].pack(side=LEFT, fill=X, expand=1)
 
         label1 = tk.Label(topFrame, text="Hi, I'm DAVE.", font=DAVE_FONT)
         label1.pack(fill=X, side=TOP)
@@ -114,11 +129,12 @@ class HomePage(tk.Frame):
         # Button Creation
         btnNames = genreNames # Btns have same names as genreNames
         btnList = ButtonList(controller)
-        for i in range(numGenres):
-            btnList.make_button(frames[i], btnNames[i])
-            btnList.config_button(i, lambda i=i: 
+        for i in range(0,n):
+            btnList.make_button(horizontalFrames[i], btnNames[i])
+            btnList.config_button(i, lambda i=i:
                                   runSpecificGenre(i, controller, CharacterPage))
             btnList.show_button(BOTTOM, i)
+
         bottomButton = tk.Button(botFrame, text='Surprise Me', 
                                  command=lambda: runRandomGenre())
         bottomButton.pack(side=BOTTOM, pady=10)
@@ -126,7 +142,7 @@ class HomePage(tk.Frame):
         labels = ImageLabels('exmachina.jpg', 'pineapple.jpg', 
                              'pulpfiction.jpg', 'titanic.jpg')
         for index in range(labels.length()):
-            labels.labelImage(frames[index], index)
+            labels.labelImage(horizontalFrames[index], index)
         labels.displayImages(BOTTOM)
 
 def runRandomGenre():
