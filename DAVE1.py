@@ -8,6 +8,7 @@ screenplay corpus.
 import argparse, nltk, random, pickle
 from collections import defaultdict
 from HAL import sentGenerator as gen
+from reportlab.pdfgen import canvas # needed for PDF output
 from Stanley import director
 
 # Parser
@@ -17,6 +18,7 @@ parser.add_argument('o')
 args = parser.parse_args()
 
 if __name__ == '__main__':
+
 
     genre = args.i
     # iterate through all the files in the genre's directory

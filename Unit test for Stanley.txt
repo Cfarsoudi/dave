@@ -1,0 +1,7 @@
+Unit test for Stanley:
+
+      The purpose of Stanley (also called the director algorithm) is to select what kind of text to create next in the script. Screenplay text exists in 6 catagories: Scene headings, actions, dialogue, character names, parentheticals, and transitions. These follow one another in very specific ways (for example: you can have several paragraphs of action following one another, but after a character name you must have either a parenthetical or a bit of dialogue). Because this is complex, it’s extremely difficult if not impossible to automate the test for this module. Therefore we here have a guide to manually test for the correct functioning of Stanley.
+
+	If Parse.py and generator are functioning properly then we can use the output of those programs for input in our test. If not we can manually add a series of lists, one for each format of test (heading, action, etc.) and run Stanley with those as input.
+
+	The correct output will start with a scene heading. All scene headings will be followed by actions. Actions can be followed either by a transition, a character name, a scene heading or another action. A transition can be followed by a character name, a scene heading or an action. A character name must be followed by either dialogue or a parenthetical. A Parenthetical must be followed by dialogue. Dialogue can be followed by either a character name or by action. Any deviation from these is an error.

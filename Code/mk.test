@@ -1,0 +1,26 @@
+#!/bin/sh
+
+# made an run on unix.ic.ucsc timeshare
+# you can run this script on there or 
+# adapt it for your own setup
+
+# this files should be in a folder with
+# Parse.py and a folder TestingMaterials
+# TestingMaterials should contian the 
+# following files:
+# input
+# ideal_Headings
+# ideal_Actions
+# ideal_Characters
+# ideal_Dialogue
+# ideal_Parentheticals
+# ideal_Transitions
+
+python3 Parse.py TestingMaterials/input out
+
+diff -y -b TestingMaterials/ideal_Headings out_Headings
+diff -y -b TestingMaterials/ideal_Actions out_Actions
+diff -y -b TestingMaterials/ideal_Characters out_Characters
+diff -y -b TestingMaterials/ideal_Dialogue out_Dialogue
+diff -y -b TestingMaterials/ideal_Parentheticals out_Parentheticals
+diff -y -b TestingMaterials/ideal_Transitions out_Transitions
