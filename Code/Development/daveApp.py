@@ -83,18 +83,19 @@ class DaveApp(tk.Tk):
         # self.geometry("%dx%d+0+0" % (w, h))
 
         # Sets up the frame that holds all others
-        container = tk.Frame(self)
+        self.container = tk.Frame(self)
+        container = self.container
         container.pack(side=TOP, fill=BOTH, expand=True)
         container.grid_rowconfigure(0, weight=1)
         container.grid_columnconfigure(0, weight=1)
 
         # Sets up a primary frame for each class
-        self.frames = self.constructFrames(container)
+        self.frames = self.constructFrames(container, HomePage, CharacterPage)
         self.showFrame(HomePage)
 
-    def constructFrames(self, parent):
+    def constructFrames(self, parent, page1, page2):
         frames = {}
-        pages = (HomePage, CharacterPage)
+        pages = (page1, page2)
         for Page in pages:
             frame = Page(parent=parent, controller=self) # Constructs the class
             frames[Page] = frame
@@ -195,7 +196,7 @@ def setOutputMode(flag):
 
 
 # Ideally this begins all script generation.
-# It takes in the outputMode flag and generates text based
+# It takes in the outputMode flag (type Genre) and generates text based
 # on the genre given by the flag
 def generateScript(outputMode):
 
