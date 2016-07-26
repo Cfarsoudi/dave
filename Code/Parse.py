@@ -173,30 +173,45 @@ for c in range(len(listFile)):
             paren = True
             paranthetical.append(line)
         elif char or paren:
-            char = False
-            paren = False
-            dialog.append(line)
+            #char = False
+            #paren = False
+            #dialog.append(line)
             d = c
             if(d < len(listFile)):
             #for d in range(c, len(listFile)-1):
                 nextIndent=(len(listFile[d+1])-len(listFile[d+1].lstrip(' ')))#.decode('UTF-8').lstrip(' ')))
                 currIndent=(len(listFile[d])-len(listFile[d].lstrip(" ")))#.decode('UTF-8').lstrip(' ')))
-                print(currIndent)
-                print(nextIndent)
+                #print(currIndent)
+                #print(nextIndent)
                 if(currIndent>nextIndent):
-                    print("finished"+ MLdialog)
+                    #print("finished"+ MLdialog)
                     char = False
                     paren = False
-                    dialog.append(MLdialog)
+                    if(len(MLdialog)!=0):
+                        dialog.append(MLdialog)
                     MLdialog=''
                 elif(currIndent==nextIndent):
                     print(MLdialog)
                     MLdialog=MLdialog+line
                 d=d+1
+            c=d
         else:
-            char = False
-            paren = False
-            action.append(line)
+            #char = False
+            #paren = False
+            #action.append(line)
+            if(c<len(listFile)):
+                nextIndent = len(listFile[c+1]) - len(listFile[c+1].lstrip(" "))
+                currIndent = len(listFile[c]) - len(listFile[c].lstrip(" "))
+                if(currIndent != nextIndent):
+                    char = False
+                    paren = False
+                    if(len(MLaction) != 0):
+                        action.append(MLaction)
+                    MLaction = ''
+                elif(currIndent == nextIndent):
+                    MLaction = MLaction + line
+                c=c+1
+
 
 print(action)
 print(dialog)
