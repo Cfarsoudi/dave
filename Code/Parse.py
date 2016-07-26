@@ -108,7 +108,7 @@ def stanley(head, act, char, paren, dia, trans,out):
 
 #here we open up our input and output files 
 #and setup the booleans that will control our parsing
-inputFile = open('input', 'rb+')
+inputFile = open('input', 'rU', encoding="utf-8")
 outputFile = open("output","w")
 char = False
 paren = False
@@ -135,7 +135,7 @@ MLaction=""
 # this will make accessing individual elements that we judge for 
 # clustering each respondent easier
 for c in range(len(listFile)):
-    line = listFile[c].decode('UTF-8')
+    line = listFile[c]#.decode('UTF-8')
     if len(line) > 1:
         #print(line.split())
         #print(len(line.split()))
@@ -176,13 +176,15 @@ for c in range(len(listFile)):
             char = False
             paren = False
             dialog.append(line)
-            if(c < len(listFile)):
-                nextIndent=(len(listFile[c+1])-len(listFile[c+1].decode('UTF-8').lstrip(' ')))
-                currIndent=(len(listFile[c])-len(listFile[c].decode('UTF-8').lstrip(' ')))
+            d = c
+            if(d < len(listFile)):
+            #for d in range(c, len(listFile)-1):
+                nextIndent=(len(listFile[d+1])-len(listFile[d+1].lstrip(' ')))#.decode('UTF-8').lstrip(' ')))
+                currIndent=(len(listFile[d])-len(listFile[d].lstrip(" ")))#.decode('UTF-8').lstrip(' ')))
                 print(currIndent)
                 print(nextIndent)
                 if(currIndent>nextIndent):
-                    print(MLdialog)
+                    print("finished"+ MLdialog)
                     char = False
                     paren = False
                     dialog.append(MLdialog)
@@ -190,6 +192,7 @@ for c in range(len(listFile)):
                 elif(currIndent==nextIndent):
                     print(MLdialog)
                     MLdialog=MLdialog+line
+                d=d+1
         else:
             char = False
             paren = False
