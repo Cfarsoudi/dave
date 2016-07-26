@@ -1,3 +1,11 @@
+''' 
+daveApp.py
+
+Generates screenplay using Markov models of a genre-separated 
+screenplay corpus.
+'''
+
+
 from tkinter import *
 from tkinter.ttk import *
 import tkinter as tk
@@ -13,7 +21,7 @@ from nltk.text import ContextIndex
 from nltk.parse.stanford import StanfordParser
 from generator import sentGenerator
 
-global outputMode
+# global outputMode
 
 # parser = argparse.ArgumentParser()
 # parser.add_argument('i')
@@ -44,18 +52,18 @@ class GenreList():
             nameList.append(Genre.name)
         return nameList
 
-    def appendList(self, *args):
-        for index, arg in enumerate(args):
-            self.list.append(Genre(arg, index))
-        self.length = len(self.list)
-
-# Create a list of Genres
 # Each genre has a number associated to it given by its position
-# I.e. SciFi: 0, Comedy: 1, etc.
+# I.e. Action: 0, Adventure: 1, etc.
 genres = GenreList('Action', 'Adventure', 'Animation', 'Comedy', 'Crime',
                    'Drama', 'Family', 'Fantasy', 'Film-Noir', 'Horror',
                    'Musical','Mystery', 'Romance', 'Sci-Fi', 'Short', 
                    'Thriller', 'War',)
+
+# Initialize outputMode to a random genre
+# so that if the user wants to auto generate,
+# a genre will be chosen for them.
+global outputMode
+outputMode = None
 
 # Set up some variables
 genreNames = genres.getNameList()
@@ -129,7 +137,7 @@ class HomePage(tk.Frame):
         bottomButton.pack(side=BOTTOM, pady=10)
 
         autoGenButton = tk.Button(botFrame, text='Generate Now!',
-                                  command=lambda: generateScript())
+                                  command=lambda: generateScript(outputMode))
         autoGenButton.pack(side=BOTTOM, pady=10)
 
         labels = ImageLabels('exmachina.jpg', 'pineapple.jpg', 
@@ -159,16 +167,33 @@ def setOutputMode(flag):
             mode = Genre         # we want to run that genre
     return mode
 
-# Ideally this begins all script generation
-# Takes in the outputMode and generates text based
-# on the genre given by the outputMode flag
+
+
+# Ideally this begins all script generation.
+# It takes in the outputMode flag and generates text based
+# on the genre given by the flag
 def generateScript(outputMode):
+
+    # Check the outputMode to determine genre
+
+    # Then generate content and write it to the console (for now)
+
+    # Or actually you could just save it as a pdf and then call
+
+    # some some like popUpSaveWindow()
+
+
     base_text = open('dead_poets_final.txt', 'rU', encoding='utf-8').read()
     base_sents = nltk.sent_tokenize(base_text)
     gen = sentGenerator(base_text)
     output = open('test.txt', 'w', encoding="utf-8")
     text = gen()
     output.write(text)
+    
+
+
+def popUpSaveWindow()
+    pass
 
 class CharacterPage(tk.Frame):
     def __init__(self, parent, controller):
