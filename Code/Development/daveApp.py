@@ -155,11 +155,11 @@ class HomePage(tk.Frame):
 
         bottomButton = tk.Button(botFrame, text='Surprise Me', 
                                  command=lambda: runRandomGenre())
-        bottomButton.pack(side=BOTTOM, pady=10)
+        bottomButton.pack(side=BOTTOM, pady=5)
 
         autoGenButton = tk.Button(botFrame, text='Generate Now!',
                                   command=lambda: generateScript(outputMode))
-        autoGenButton.pack(side=BOTTOM, pady=10)
+        autoGenButton.pack(side=BOTTOM, pady=2)
 
         labels = ImageLabels('diehard.jpg','indiana_jones.jpg', 'totoro.jpg',
                              'pineapple.jpg', 'godfather.jpg', 'titanic.jpg',
