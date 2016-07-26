@@ -55,8 +55,8 @@ class GenreList():
 # Each genre has a number associated to it given by its position
 # I.e. Action: 0, Adventure: 1, etc.
 genres = GenreList('Action', 'Adventure', 'Animation', 'Comedy', 'Crime',
-                   'Drama', 'Family', 'Fantasy', 'Film-Noir', 'Horror',
-                   'Musical','Mystery', 'Romance', 'Sci-Fi', 'Short', 
+                   'Drama', 'Family', 'Fantasy', 'Horror',
+                   'Mystery', 'Romance', 'Sci-Fi', 
                    'Thriller', 'War',)
 
 # Initialize outputMode to a random genre
@@ -166,7 +166,7 @@ class HomePage(tk.Frame):
                              'up.jpg', 'panslab.jpg', 'shining.jpg',
                              'maltese.jpg', 'casablanca.jpg',
                              'exmachina.jpg', 'pulpfiction.jpg', 'zero.jpg')
-d
+
         for index in range(labels.length()):
             labels.labelImage(horizontalFrames[index], index)
         labels.displayImages(BOTTOM)
@@ -217,7 +217,7 @@ def generateScript(outputMode):
     
 
 
-def popUpSaveWindow()
+def popUpSaveWindow():
     pass
 
 class CharacterPage(tk.Frame):
