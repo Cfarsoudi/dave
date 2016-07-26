@@ -12,6 +12,8 @@ class director(object):
         trans : list of transition strings
         act : sentGenerator for action 
         dia : sentGenerator for dialogue
+
+        ret: list of (formatType, string) for furture formatting
     """
     def __init__(self, headers, characters, parentheticals,
                  transitions, actions, dialogue, outfile):
@@ -25,10 +27,12 @@ class director(object):
         self.out = outfile
     
     def __call__(self):
-        self.__write_script(120, self.out)
+        self.write_script(120, self.out)
 
-    def __write_script(self, length, outfile):
+    def write_script(self, length, outfile):
         start_time = time.time()
+        retScript = []
+
         needHeader = True
         needAction = False
         needCharacter = False
@@ -45,15 +49,13 @@ class director(object):
                                           len(self.char) + len(self.trans))     
                 if (rand < len(self.head) and len(self.head) > 0):
                     currentScene = self.__randomPop(self.head)
-                    outfile.write(currentScene)
+                    retScript.append(('head', currentScene))
                     needHeader = False
                     needAction = True
 
                 elif (rand < actlen + len(self.head) and actlen > 0):
                     nextAction = self.act(3)
-                    outfile.write('\n')
-                    outfile.write('Action:')
-                    outfile.write(nextAction)
+                    retScript.append(('act', nextAction))
                     needCharacter = True
                     needTransition = True
                     needHeader = True
@@ -61,18 +63,14 @@ class director(object):
                 elif (rand < len(self.char) + actlen + len(self.head) 
                         and len(self.char) > 0):
                     nextChar = self.__randomPop(self.char)
-                    outfile.write('\n')
-                    outfile.write('Character:')
-                    outfile.write(nextChar)
+                    retScript.append(('char', nextChar))
                     needDialog = True
                     needParanthetical = True
 
                 elif (rand < len(self.trans) + actlen + len(self.char) 
                            + len(self.head) and len(self.trans) > 0):       
                     nexttrans = self.__randomPop(self.trans)
-                    outfile.write('\n')
-                    outfile.write('Transition:')
-                    outfile.write(nexttrans)
+                    retScript.append(('trans', nexttrans))
                     needHeader = True
                     needTransition = False
 
@@ -82,16 +80,12 @@ class director(object):
                 if (needParanthetical and rand < len(self.paren) 
                                       and len(self.paren) > 0):
                     nextPara = self.__randomPop(self.paren)
-                    outfile.write('\n')
-                    outfile.write('Parenthetical:')
-                    outfile.write(nextPara)
+                    retScript.append(('paren', nextPara))
                     needParanthetical = False
 
                 for i in range(random.randint(1, 10)):
                     nextPhrase = self.dia()
-                    outfile.write('\n')
-                    outfile.write('Dialogue:')
-                    outfile.write(nextPhrase)
+                    retScript.append(('dia', nextPhrase))
 
                 needDialog = False
                 needHeader = True
@@ -103,9 +97,7 @@ class director(object):
 
                 for i in range(random.randint(0, 3)):
                     nextAction = self.act(3)
-                    outfile.write('\n')
-                    outfile.write('Action:')
-                    outfile.write(nextAction)
+                    retScript.append(('act', nextAction))
 
                 needCharacter = True
                 needTransition = True
@@ -113,14 +105,14 @@ class director(object):
 
             elif (needHeader and len(self.head) > 0):
                     currentScene = self.__randomPop(self.head)
-                    outfile.write('\n')
-                    outfile.write(currentScene)
+                    retScript.append(('head', currentScene))
                     needHeader = False
                     needAction = True
             else:
-                return
+                break
         print ('Time elapsed: ', time.time()-start_time)
-        return
+        print (retScript)
+        return retScript
 
     def __randomPop(self, lis):
         """
