@@ -7,7 +7,7 @@ class textC: # class to define text and type of text
         self.txt = str
         self.type = typ
 
-c = canvas.Canvas("movescript.pdf") # create a PDF
+c = canvas.Canvas("moviescript.pdf") # create a PDF
 c.setFont('Courier', 16) # change the font 
 c.drawCentredString(297.635,420.945,"Movie Title")
 c.drawCentredString(297.635,375.945,"Written by: D.A.V.E")
@@ -210,13 +210,15 @@ class director(object):
         self.out = outfile
     
     def __call__(self):
-        retScript = self.write_script(120, self.out)
+        retScript = self.write_script(12, self.out)
         print (len(retScript))
         for (flag, line) in retScript:
+            start_time = time.time()
             # print(flag)
             # print(line)
+            print ('Time elapsed: ', time.time()-start_time)
             write(line, flag)
-            write('doggo doogs', 'dialog')
+            time_elapsed = time.time()-start_time
         c.save()
         print ('Time elapsed: ', time.time()-start_time)
 
