@@ -1,15 +1,10 @@
 ''' 
 daveApp.py
 
-Creates a tkinter GUI for screenplay genre selection. Once a
-genre is selected by pressing the correspoding button, the
-generateScript() function is called, which sends the global
-flag 'outputMode' to the Stanley module, which generates
-a screenplay using Markov models of a genre-separated 
+Generates screenplay using Markov models of a genre-separated 
 screenplay corpus.
 '''
-
-# For the tkinter GUI
+# For the UI
 from tkinter import *
 from tkinter.ttk import *
 import tkinter as tk
@@ -25,10 +20,10 @@ import random
 import pickle
 from collections import defaultdict
 from HAL import sentGenerator as gen
-from Stanley import Director
+from Stanley import director
 
+# Constant fonts
 LARGE_FONT = ('Verdana', 30)
-SMALL_FONT = ('Verdana', 15)
 DAVE_FONT = ('American Typewriter', 30)
 SMALL_DAVE = ('American Typewriter', 20)
 
@@ -51,17 +46,19 @@ class GenreList():
         return nameList
 
 # Each genre has a number associated to it given by its position
+# I.e. Action: 0, Adventure: 1, etc.
 genres = GenreList('Action', 'Adventure', 'Comedy', 'Crime',
                    'Drama', 'Film-Noir', 'Fantasy', 'Horror',
                    'Mystery', 'Romance', 'Sci-Fi', 
                    'War',)
 
-# Initialize outputMode to a genre
+# Initialize outputMode to a random genre
+# so that if the user wants to auto generate,
+# a genre will be chosen for them.
 global outputMode
 outputMode = genres.list[0]
 
-# Simplify common-use variables for 
-# the genre names and number of genres.
+# Set up some variables
 genreNames = genres.getNameList()
 numGenres = genres.length
 
@@ -70,12 +67,16 @@ class DaveApp(tk.Tk):
     def __init__(self, *args, **kwargs):
         tk.Tk.__init__(self, *args, **kwargs)
         tk.Tk.wm_title(self, 'DAVE')
+
+        # self.attributes('-fullscreen', True) # This may not work on windows
+
         # Sets up the frame that holds all others
         self.container = tk.Frame(self)
         container = self.container
         container.pack(side=TOP, fill=BOTH, expand=True)
         container.grid_rowconfigure(0, weight=1)
         container.grid_columnconfigure(0, weight=1)
+
         # Sets up a primary frame for each class
         self.frames = self.constructFrames(container, HomePage, CharacterPage)
         self.showFrame(HomePage)
@@ -84,7 +85,7 @@ class DaveApp(tk.Tk):
         frames = {}
         pages = (page1, page2)
         for Page in pages:
-            frame = Page(parent=parent, controller=self)
+            frame = Page(parent=parent, controller=self) # Constructs the class
             frames[Page] = frame
             frame.grid(row=0, column=0, sticky='NSEW')
         return frames
@@ -98,13 +99,17 @@ class HomePage(tk.Frame):
 
     def __init__(self, parent, controller):
         tk.Frame.__init__(self,parent)
+
         # Setting up frames for organization of UI
         topFrame = tk.Frame(self)
         topFrame.pack(side=TOP, fill=X)
+        
         topRow = tk.Frame(self)
         topRow.pack(side=TOP, fill=BOTH)
+        
         botFrame = tk.Frame(self)
         botFrame.pack(side=BOTTOM, fill=X)
+
         botRow = tk.Frame(self)
         botRow.pack(side=BOTTOM, fill=BOTH)
 
@@ -116,6 +121,7 @@ class HomePage(tk.Frame):
         for i in range(0,k):
             horizontalFrames.append(tk.Frame(topRow))
             horizontalFrames[i].pack(side=LEFT, fill=X, expand=1)
+
         # Half of the frames for each genre & movie poster in bottom row
         for i in range(k,n):
             horizontalFrames.append(tk.Frame(botRow))
@@ -153,12 +159,17 @@ class HomePage(tk.Frame):
 def runRandomGenre():
     global outputMode
     outputMode = setOutputMode(randint(0,numGenres-1)) # Sets a random genre
+
+    print('Output name: ',outputMode.name)
+    print('Output number: ',outputMode.number)
     generateScript(outputMode)
     
 def runSpecificGenre(flag, controller, cls):
     global outputMode
     outputMode = setOutputMode(flag)
-    # controller.showFrame(cls) # Would've gone to the character creation page
+    # controller.showFrame(cls)
+    print('Output name: ',outputMode.name)
+    print('Output number: ',outputMode.number)
     generateScript(outputMode)
 
 def setOutputMode(flag):
@@ -169,13 +180,13 @@ def setOutputMode(flag):
 
 
 
-# Begins all script generation.
+# Ideally this begins all script generation.
 # It takes in the outputMode flag (type Genre) and generates text based
-# on the genre given by the flag.
+# on the genre given by the flag
 def generateScript(outputMode):
 
     genre = outputMode.name
-    # Iterate through all the files in the genre's directory
+    # iterate through all the files in the genre's directory
     scriptFormat = {}
     filenames = [('headings', genre + '.Headings'),
                  ('characters', genre + '.Characters'),
@@ -203,19 +214,24 @@ def generateScript(outputMode):
     actGen = gen(actions)
     diaGen = gen(dialogue)
     output = open('test.txt', 'w', encoding="utf-8")
-    stan = Director(headings, characters, parentheticals, transitions,
+    stan = director(headings, characters, parentheticals, transitions,
                     actGen, diaGen, output)
     stan()
 
+# The popUp window and the CharacterPage is code that
+# was meant to be implemented but didn't have the time.
+def popUpSaveWindow():
+    # Generate popup window widget.
+    # print("Saved as a PDF.")
+    pass
 
-# Unused second page of GUI
-# Could be implemented in a future
-# Sprint 4
 class CharacterPage(tk.Frame):
     def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent)
+
         topFrame = tk.Frame(self)
         topFrame.pack(side=TOP, fill=X)
+
         label = tk.Label(topFrame, text='Characters', font=LARGE_FONT)
         label.pack(fill=X, pady=10, padx=10)
         label1 = tk.Label(self, text='Would you like to name your characters?',
