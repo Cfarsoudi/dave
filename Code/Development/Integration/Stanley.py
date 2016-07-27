@@ -12,16 +12,22 @@ class textC: # class to define text and type of text
         self.type = typ
 
 c = canvas.Canvas("moviescript.pdf") # create a new PDF
-c.setFont('Courier', 16)
-c.drawCentredString(297.635,420.945,"Movie Title")
-c.drawCentredString(297.635,375.945,"Written by: DAVE")
-c.showPage() # new page
-c.setFont('Courier', 12)
-c.drawString(580, 5, "2") # print the page number
-page = 2 # keep track of the page
-pdfszv = 785 # y-coordinate for printing text
-pdfszh = 40 # x-coordinate for printing text
-sceneheading = 0
+count = 0
+
+def initPdf():
+    global page, pdfszv, pdfszh, sceneheading, count, c
+    c = canvas.Canvas("moviescript.pdf") # create a PDF
+    c.setFont('Courier', 16) # change the font 
+    c.drawCentredString(297.635,420.945,"Movie Title")
+    c.drawCentredString(297.635,375.945,"Written by: D.A.V.E")
+    c.showPage() # new page
+    c.setFont('Courier', 12) # 
+    c.drawString(580, 5, "2") # print the page number
+    page = 2 # keep track of the page
+    pdfszv = 785 # y-coordinate for printing text
+    pdfszh = 40 # x-coordinate for printing text
+    sceneheading = 0
+    count = 0
 
 def write(str, type): # helper function to write text according to text type
     if type == 'heading':
@@ -186,6 +192,7 @@ def newPage():
     c.drawString(580, 5, pgnum) # print the pg number in the corner
     pdfszv=785 # bring y-coordinate back to the top of the page
 
+initPdf()
 write("FADE IN:", 'action')
 
 class Director(object):
@@ -214,11 +221,14 @@ class Director(object):
         self.out = outfile
     
     def __call__(self):
-
+        global c, count
+        if count > 0:
+            initPdf()
         retScript = self.writeScript(5, self.out)
         for (flag, line) in retScript:
             write(line, flag)
         c.save()
+        count = count + 1
 
     def writeScript(self, length, outfile):
 
