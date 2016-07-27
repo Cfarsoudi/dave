@@ -26,5 +26,6 @@ Romance.*
 Sci-Fi.*
 War.*
 
-# Ignore .pdfs
+# Ignore .pdfs not in Documentation
 *.pdf
+!/Documentation/*.pdf
