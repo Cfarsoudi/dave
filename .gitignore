@@ -1,11 +1,34 @@
 # Ignore the pycaches
 __pycache__
 
-# Ignore .jpg's in the dave repo
-# But no recursivity, hence the forward slash
-/*.jpg
+# Ignore all .jpg's except in the Posters folder
+*.jpg
+!/Posters/*.jpg
 
-# Ignore any .jpg's and .txt's used in Development or any
-# sub folder of Development
-Development/**/*.jpg
-Development/**/*.txt
+# Ignore all .txt's not in Documentation
+*.txt
+!/Documentation/*.txt
+
+# Ignore stuff in zip file
+Code/Development/DiscoveryOne/Data.7z
+
+# Ignore all of the parse data
+Action.*
+Adventure.*
+Comedy.*
+Crime.*
+Drama.*
+Fantasy.*
+Film-Noir.*
+Horror.*
+Mystery.*
+Romance.*
+Sci-Fi.*
+War.*
+
+# Ignore .pdfs
+*.pdf
+
+
+
+
