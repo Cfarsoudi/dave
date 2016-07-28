@@ -1,5 +1,6 @@
 # DAVE
-Python program that uses n-grams to write formatted screenplays.  <a href=""></a>Data gathered using the Java webscraper DiscoveryOne
+Python program that uses n-grams to write formatted screenplays.  
+Data gathered using the Java webscraper DiscoveryOne
 
 ## Technology
 
