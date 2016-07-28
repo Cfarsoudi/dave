@@ -1,13 +1,16 @@
 # DAVE
 Python program that uses n-grams to write formatted screenplays. 
+Data gathered using the Java webscraper DiscoveryOne
 
 ## Technology
 
 * Python 3.4
+* Java
 * NLTK 3.0
 * tkinter
 * pillow
 * reportLab
+* jsoup
 
 ## Usage
 
