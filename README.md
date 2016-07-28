@@ -1,33 +1,24 @@
-# dave
-Writes a movie script by itself
+# DAVE
+Python program that uses n-grams to write formatted screenplays.
 
-####Meeting Note for 7/12/2016
-Task assignments:
-  - webscraping               : Alec
-  - text generation           : Nika, John, Cyrus
-  - Osrangize data structures : Ken 
-  - "Director" for generator  : Ken
+####Required Technology
 
-Current Questions:
-  1.  How long is dialogue/action lines?
-  2.  How should we make characters consistent?
-    - Make user generated list
-    - Or Other Methods
-  3.  Genre selection?
+Python 3.4
+NLTK 3.0
+tkinter
+pillow
+reportLab
 
-Generation:
-  -grammars
-  -scikit
-  -Source?
-  -NLTK machine learning?
+####Usage
 
-Definition of Done(DoD):
+The following files must be in the same directory as daveApp.py
 
+buttonList.py
+imageLabels.py
+HAL.py
+Stanley.py
+All files from the Data folder
+All files from the Posters folder
 
-Coding Standards:
-  - PEP 8 Style Guide https://www.python.org/dev/peps/pep-0008/
-  - Self Documenting Variables (as much as possible
-  - Comments
+Then run python3 daveApp.py
 
-Link to Scraped Data:
-https://dl.dropboxusercontent.com/u/73386885/Data.zip
