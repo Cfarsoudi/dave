@@ -17,7 +17,8 @@ buttonList.py
 imageLabels.py
 HAL.py
 Stanley.py
-All files from the Data folder
+All files from the Data folder 
+http://www.mediafire.com/download/vol1df9bv7c448f/data.zip
 All files from the Posters folder
 
 Then run python3 daveApp.py
